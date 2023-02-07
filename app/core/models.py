@@ -36,7 +36,8 @@ class UserManager(BaseUserManager):
 
         Args:
             email: will be new default instead of `username`
-            password: we will be using `set_password` method to encrypt password
+            password: we will be using `set_password` method to encrypt
+            password
             **extra_fields: using this arbitrary keyword args option to
                         accomodate any additional user fields in future
 
@@ -55,7 +56,8 @@ class UserManager(BaseUserManager):
         # as we are deriving from `BaseUserManager`
         user = self.model(email=self.normalize_email(email), **extra_fields)
         # TODO - refer normalize_email method -
-        # https://docs.djangoproject.com/en/4.1/topics/auth/customizing/#django.contrib.auth.models.BaseUserManager.normalize_email
+        # https://docs.djangoproject.com/en/4.1/topics/auth/customizing/
+        # #django.contrib.auth.models.BaseUserManager.normalize_email
 
         # best practice to hash password using super class method `set_password`
         user.set_password(password)
@@ -97,5 +99,5 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     objects = UserManager()
-
-    USERNAME_FIELD = "email"  # overrides the default user field from base class
+    USERNAME_FIELD = "email"
+    # overrides the default user field from base class

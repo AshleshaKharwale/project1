@@ -1,5 +1,5 @@
 from django.contrib import admin  # noqa
-from . import models
+# from . import models
 
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
@@ -8,15 +8,12 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 # class UserAdmin(BaseUserAdmin):
 #     ordering = ("id",)
 #     list_display = ("email", "name")
-
-
 #  TODO - refer -
 #  https://docs.djangoproject.com/en/4.1/topics/i18n/translation/
 # https://docs.djangoproject.com/en/4.1/topics/i18n/translation/#internationalization-in-python-code
 #  Required to globalize our project
 #  Required for translation
 from django.utils.translation import gettext_lazy as _
-
 from . import models
 
 

@@ -1,4 +1,6 @@
 from django.db import models  # noqa
+from django.utils import timezone
+from django.conf import settings
 
 # Create your models here.
 
@@ -6,18 +8,25 @@ from django.db import models  # noqa
 from django.contrib.auth.models import (
     AbstractBaseUser,
     BaseUserManager,
-    PermissionsMixin
+    PermissionsMixin,
 )
+
 ###############################################################
 # TOPIC: customizing authentication and user model in django  #
 ###############################################################
 """
 How to customize default django user model and authentication?
+
 Refer - 
 https://docs.djangoproject.com/en/4.1/topics/auth/customizing
+
 REFER FULL EXAMPLE HERE -
 https://docs.djangoproject.com/en/4.1/topics/auth/customizing/#a-full-example
+
+
 additional notes ::
+
+
 """
 ###############################################################
 
@@ -30,8 +39,7 @@ class UserManager(BaseUserManager):
 
         Args:
             email: will be new default instead of `username`
-            password: we will be using `set_password` method to encrypt
-            password
+            password: we will be using `set_password` method to encrypt password
             **extra_fields: using this arbitrary keyword args option to
                         accomodate any additional user fields in future
 
@@ -50,11 +58,9 @@ class UserManager(BaseUserManager):
         # as we are deriving from `BaseUserManager`
         user = self.model(email=self.normalize_email(email), **extra_fields)
         # TODO - refer normalize_email method -
-        # https://docs.djangoproject.com/en/4.1/topics/auth/customizing/
-        # #django.contrib.auth.models.BaseUserManager.normalize_email
+        # https://docs.djangoproject.com/en/4.1/topics/auth/customizing/#django.contrib.auth.models.BaseUserManager.normalize_email
 
-        # best practice to hash password using super class method
-        # `set_password`
+        # best practice to hash password using super class method `set_password`
         user.set_password(password)
 
         # it is best practice to pass `using=self._db`
@@ -94,5 +100,59 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     objects = UserManager()
-    USERNAME_FIELD = "email"
-    # overrides the default user field from base class
+
+    USERNAME_FIELD = "email"  # overrides the default user field from base class
+
+
+class Portal(models.Model):
+    name = models.CharField(max_length=250, unique=True)
+    description = models.CharField(max_length=250)
+
+    def __str__(self):
+        return self.name
+
+
+class JobDescription(models.Model):
+    role = models.CharField(max_length=250)
+    description_text = models.CharField(max_length=250)
+    pub_date = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return self.role
+
+
+class JobTitle(models.Model):
+    """
+    JobTitle will have association with many portals
+
+    `JobTitle` <--> `User` (one-to-many relationship)
+    `JobTitle` <--> `Portal`   (one-to-many relationship)
+    `JobTitle`  <--> `JobDescription` (one-to-one relationship)
+
+    """
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE
+    )
+    title = models.CharField(max_length=250)
+    last_updated = models.DateTimeField(default=timezone.now)
+    job_description = models.OneToOneField(
+        "JobDescription", on_delete=models.CASCADE
+    )
+    portal = models.ForeignKey(Portal, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.title + f"( {self.portal} )"
+
+
+class Applicant(User):
+    """Derive from user model"""
+
+    is_applicant = models.BooleanField(default=True)
+    applied_for = models.ForeignKey(JobTitle, on_delete=models.CASCADE)
+    cover_letter = models.CharField(max_length=250)
+
+    def __str__(self):
+        return self.name
+

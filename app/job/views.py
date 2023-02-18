@@ -47,3 +47,12 @@ class PortalViewSet(viewsets.ModelViewSet):
             return serializers.PortalSerializer
         return self.serializer_class
 
+
+class JobDescriptionViewSet(viewsets.ModelViewSet):
+    queryset = JobDescription.objects.all()
+    serializer_class = serializers.JobDescriptionDetailSerializer
+
+    def get_serializer_class(self):
+        if self.action == "list":
+            return serializers.JobDescriptionSerializer
+        return self.serializer_class

@@ -35,6 +35,17 @@ class JobTitleViewSet(viewsets.ModelViewSet):
             return serializers.JobTitleSerializer
         return self.serializer_class
 
+    def perform_create(self, serializer):
+        """Create a new job title
+        # TODO - refer
+        https://www.django-rest-framework.org/api-guide/generic-views/#methods
+        Args:
+            serializer: validated serializer
+        Returns:
+        """
+
+        serializer.save(user=self.request.user)
+
 
 class PortalViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.PortalDetailSerializer
@@ -47,12 +58,34 @@ class PortalViewSet(viewsets.ModelViewSet):
             return serializers.PortalSerializer
         return self.serializer_class
 
+    def get_queryset(self):
+        """
+        We want to filter out jobtitles for authenticated users
+        """
+
+        return self.queryset.filter(user=self.request.user).order_by("-id")
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
 
 class JobDescriptionViewSet(viewsets.ModelViewSet):
     queryset = JobDescription.objects.all()
     serializer_class = serializers.JobDescriptionDetailSerializer
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [TokenAuthentication]
 
     def get_serializer_class(self):
         if self.action == "list":
             return serializers.JobDescriptionSerializer
         return self.serializer_class
+
+    def get_queryset(self):
+        """
+        We want to filter out jobtitles for authenticated users
+        """
+
+        return self.queryset.filter(user=self.request.user).order_by("-id")
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)

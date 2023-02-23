@@ -83,10 +83,12 @@ class ModelTests(TestCase):
             "password@321"
         )
         portal = models.Portal.objects.create(
+            user=user,
             name="naukri.com",
             description="famous job portal in India"
         )
         job_description = models.JobDescription.objects.create(
+            user=user,
             role="To build backend microservices",
             description_text="should know git, CICD and linux commands.",
             pub_date=timezone.now()

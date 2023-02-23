@@ -27,14 +27,14 @@ class JobTitleDetailSerializer(JobTitleSerializer):
 
     class Meta(JobTitleSerializer.Meta):
         fields = JobTitleSerializer.Meta.fields + [
-            "user", "job_description", "portal"
+             "job_description", "portal"
         ]
 
 
 class PortalSerializer(serializers.ModelSerializer):
     class Meta:
         model = Portal
-        fields = ["id","name"]
+        fields = ["id", "name"]
         read_only_fields = ["id"]
 
 
